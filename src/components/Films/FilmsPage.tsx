@@ -38,13 +38,11 @@ const FilmsPage = () => {
   const [values, setValues] = useState(defaultValues);
   const [params, setParams] = useState(defaultParams);
 
-  const { data, isLoading, isSuccess } = useGetFilmsQuery(params);
+  const { data, isLoading, isFetching } = useGetFilmsQuery(params);
 
   // const { list, total } = useAppSelector<ListResponse>(({ films }) => films);
 
-  useEffect(() => {
-    console.log(data, isLoading, isSuccess);
-  }, [isLoading, isSuccess]);
+  useEffect(() => {}, []);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -120,16 +118,20 @@ const FilmsPage = () => {
           <Button
             type='primary'
             htmlType='submit'
+            loading={isFetching}
             style={{ marginTop: 20 }}
           >
             Применить
           </Button>
         </Card>
       </form>
-      {data?.docs?.map((item: Film) => (
-        <div key={item.id}>{item.name}</div>
-      ))}
+      {data ? (
+        data?.docs?.map((item: Film) => <div key={item.id}>{item.name}</div>)
+      ) : (
+        <div>Загрузка...</div>
+      )}
       <Pagination
+        disabled={isFetching}
         style={{ margin: '0 auto', width: 'fit-content', marginTop: 40 }}
         defaultCurrent={1}
         total={data?.total}
