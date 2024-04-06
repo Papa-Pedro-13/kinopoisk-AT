@@ -9,3 +9,12 @@ export function formatDate(date: string) {
 
   return [year, month, day].join('-');
 }
+export const buildUrl = (url: string, params: any) => {
+  let urlWithParams = url;
+  Object.entries(params).forEach(([key, value], index) => {
+    const sign = index === 0 ? '?' : '&';
+    urlWithParams += `${sign}${key}=${value}`;
+  });
+
+  return urlWithParams;
+};

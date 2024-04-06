@@ -1,15 +1,16 @@
-import Film from '@/components/Film/Film';
-import Films from '@/components/Films/Films';
+import FilmPage from '@/components/Film/FilmPage';
+import FilmsPage from '@/components/Films/FilmsPage';
+
 import { createBrowserRouter, Link } from 'react-router-dom';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Films />,
+    element: <FilmsPage />,
   },
   {
     path: 'films/:id',
-    element: <Film />,
+    element: <FilmPage />,
   },
 ]);
 export default router;

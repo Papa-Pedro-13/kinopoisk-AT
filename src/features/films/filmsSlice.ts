@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { BASE_URL } from '../../utils/constants';
+import { Film, ListResponse } from '../types';
 
 export const getFilms = createAsyncThunk(
   'films/getFilms',
@@ -21,9 +22,13 @@ export const getFilms = createAsyncThunk(
 
 const filmsSlice = createSlice({
   name: 'films',
-  initialState: {
+  initialState: <ListResponse>{
     list: [],
     filtered: [],
+    total: 0,
+    limit: 10,
+    page: 1,
+    pages: 1,
   },
   reducers: {
     filterByPrice: (state, { payload }) => {
@@ -32,7 +37,8 @@ const filmsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(getFilms.fulfilled, (state, action) => {
-      state.list = action.payload;
+      state.list = action.payload.docs;
+      state.total = action.payload.total;
     });
   },
 });
