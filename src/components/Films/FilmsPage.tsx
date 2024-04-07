@@ -11,6 +11,7 @@ import {
   Pagination,
   Button,
   Form,
+  Slider,
 } from 'antd';
 
 import { formatDate } from '@/utils/common';
@@ -18,11 +19,18 @@ import { formatDate } from '@/utils/common';
 const { Search } = Input;
 const { RangePicker } = DatePicker;
 
-const defaultValues = {
+interface DefaultValues {
+  title: string;
+  year: number | number[];
+  ageRating: number | number[];
+  ['countries.name']: string;
+}
+
+const defaultValues: DefaultValues = {
   title: '',
-  ageRating: 12,
-  price_min: 0,
-  price_max: 0,
+  year: [1874, new Date().getFullYear()],
+  ageRating: [0, 18],
+  'countries.name': 'Россия',
 };
 const defaultParams = {
   ...defaultValues,
@@ -32,13 +40,16 @@ const defaultParams = {
 };
 
 const FilmsPage = () => {
-  const dateFormat = 'YYYY-MM-DD';
-  const [age, setAge] = useState('');
+  const [age, setAge] = useState<number | number[]>([0, 18]);
+  const [year, setYear] = useState<number | number[]>([
+    1874,
+    new Date().getFullYear(),
+  ]);
   const [country, setCountry] = useState('');
   const [values, setValues] = useState(defaultValues);
   const [params, setParams] = useState(defaultParams);
 
-  const { data, isLoading, isFetching } = useGetFilmsQuery(params);
+  const { data, isSuccess, isFetching, isError } = useGetFilmsQuery(params);
 
   // const { list, total } = useAppSelector<ListResponse>(({ films }) => films);
 
@@ -46,8 +57,7 @@ const FilmsPage = () => {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    setParams({ ...params, ageRating: +age });
-    console.log(params);
+    setParams({ ...params, ageRating: age, year: year });
   };
 
   const onChangePagination = (page: number, pageSize: number) => {
@@ -55,6 +65,15 @@ const FilmsPage = () => {
   };
   const handleChange = () => {};
 
+  const onChangeAge = (value: number | number[]) => {
+    setAge(value);
+  };
+  const onChangeYear = (value: number | number[]) => {
+    setYear(value);
+  };
+  if ((!isSuccess && !isFetching) || isError) {
+    return <h2>Ошибка</h2>;
+  }
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -62,32 +81,30 @@ const FilmsPage = () => {
           <Flex
             wrap='wrap'
             gap={20}
-            align={'center'}
+            style={{ flexDirection: 'column' }}
           >
-            <RangePicker
-              placeholder={['От', 'До']}
-              allowEmpty={[true, true]}
-              picker='year'
-              maxDate={dayjs(formatDate(new Date().toDateString()), dateFormat)}
-            />
-            <Select
-              onChange={(value: string) => setAge(value)}
-              placeholder='Возрастной рейтинг'
-              options={[
-                {
-                  value: '0',
-                  label: '0+',
-                },
-                {
-                  value: '12',
-                  label: '12+',
-                },
-                {
-                  value: '18',
-                  label: '18+',
-                },
-              ]}
-            />
+            <div>
+              <p>Возрастной рейтинг</p>
+              <Slider
+                range
+                onChangeComplete={onChangeAge}
+                step={1}
+                defaultValue={[0, 18]}
+                max={18}
+                min={0}
+              />
+            </div>
+            <div>
+              <p>Год</p>
+              <Slider
+                range
+                onChangeComplete={onChangeYear}
+                step={1}
+                defaultValue={[1874, new Date().getFullYear()]}
+                max={new Date().getFullYear()}
+                min={1874}
+              />
+            </div>
 
             <Select
               onChange={(value: string) => setCountry(value)}

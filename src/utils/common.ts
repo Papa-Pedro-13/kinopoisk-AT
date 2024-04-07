@@ -13,7 +13,15 @@ export const buildUrl = (url: string, params: any) => {
   let urlWithParams = url;
   Object.entries(params).forEach(([key, value], index) => {
     const sign = index === 0 ? '?' : '&';
-    urlWithParams += `${sign}${key}=${value}`;
+    if (Array.isArray(value)) {
+      if (value[0] !== value[1]) {
+        urlWithParams += `${sign}${key}=${value[0]}-${value[1]}`;
+      } else {
+        urlWithParams += `${sign}${key}=${value[0]}`;
+      }
+    } else {
+      urlWithParams += `${sign}${key}=${value}`;
+    }
   });
 
   return urlWithParams;
