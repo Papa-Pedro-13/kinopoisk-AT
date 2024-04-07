@@ -11,8 +11,12 @@ export function formatDate(date: string) {
 }
 export const buildUrl = (url: string, params: any) => {
   let urlWithParams = url;
+  let itIsFirst = true;
   Object.entries(params).forEach(([key, value], index) => {
-    const sign = index === 0 ? '?' : '&';
+    if (value === '') return;
+
+    const sign = itIsFirst ? '?' : '&';
+    itIsFirst = false;
     if (Array.isArray(value)) {
       if (value[0] !== value[1]) {
         urlWithParams += `${sign}${key}=${value[0]}-${value[1]}`;

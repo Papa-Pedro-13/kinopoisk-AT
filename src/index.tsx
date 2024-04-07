@@ -2,17 +2,19 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import '@/assets/scss/app.scss';
 
-import { Layout } from 'antd';
 import App from './components/App/App';
 import { Provider } from 'react-redux';
 import { store } from './features/store';
-const { Header, Content, Footer } = Layout;
+import HeaderApp from './components/HeaderApp/HeaderApp';
+
+import { Layout } from 'antd';
+const { Content, Footer } = Layout;
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Provider store={store}>
       <Layout>
-        <Header />
+        <HeaderApp />
         <Content
           style={{
             padding: '50px',
@@ -25,7 +27,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <App />
         </Content>
         <Footer style={{ textAlign: 'center' }}>
-          Ant Design ©{new Date().getFullYear()} Created by Ant UED
+          Avito tech frontend ©{new Date().getFullYear()} Created by Aleksandr
+          Ostrovskii
         </Footer>
       </Layout>
     </Provider>

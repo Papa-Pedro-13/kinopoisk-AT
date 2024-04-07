@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Film, ListResponse, useAppSelector } from '@/features/types';
+import React, { useState } from 'react';
+
+import { Film } from '@/features/types';
 import { useGetFilmsQuery } from '@/features/api/apiSlice';
-import dayjs from 'dayjs';
+
 import {
   Card,
   DatePicker,
@@ -10,27 +11,21 @@ import {
   Input,
   Pagination,
   Button,
-  Form,
   Slider,
 } from 'antd';
 
-import { formatDate } from '@/utils/common';
-
-const { Search } = Input;
-const { RangePicker } = DatePicker;
+import FilmCard from './FilmCard';
 
 interface DefaultValues {
-  title: string;
   year: number | number[];
   ageRating: number | number[];
   ['countries.name']: string;
 }
 
 const defaultValues: DefaultValues = {
-  title: '',
   year: [1874, new Date().getFullYear()],
   ageRating: [0, 18],
-  'countries.name': 'Россия',
+  'countries.name': '',
 };
 const defaultParams = {
   ...defaultValues,
@@ -46,31 +41,35 @@ const FilmsPage = () => {
     new Date().getFullYear(),
   ]);
   const [country, setCountry] = useState('');
-  const [values, setValues] = useState(defaultValues);
   const [params, setParams] = useState(defaultParams);
 
   const { data, isSuccess, isFetching, isError } = useGetFilmsQuery(params);
 
-  // const { list, total } = useAppSelector<ListResponse>(({ films }) => films);
+  //Get countries list for filter
+  const countries = require('i18n-iso-countries');
+  countries.registerLocale(require('i18n-iso-countries/langs/ru.json'));
 
-  useEffect(() => {}, []);
-
+  //Apply filters
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    setParams({ ...params, ageRating: age, year: year });
+    setParams({
+      ...params,
+      ageRating: age,
+      year: year,
+      'countries.name': country,
+    });
   };
 
   const onChangePagination = (page: number, pageSize: number) => {
     setParams({ ...params, page: page, limit: pageSize });
   };
-  const handleChange = () => {};
-
   const onChangeAge = (value: number | number[]) => {
     setAge(value);
   };
   const onChangeYear = (value: number | number[]) => {
     setYear(value);
   };
+
   if ((!isSuccess && !isFetching) || isError) {
     return <h2>Ошибка</h2>;
   }
@@ -110,40 +109,39 @@ const FilmsPage = () => {
               onChange={(value: string) => setCountry(value)}
               showSearch
               placeholder='Страна'
-              options={[
-                {
-                  value: 'jack',
-                  label: 'Jack',
-                },
-                {
-                  value: 'lucy',
-                  label: 'Lucy',
-                },
-                {
-                  value: 'tom',
-                  label: 'Tom',
-                },
-              ]}
+              options={Object.values(countries.getNames('ru')).map((value) => {
+                return { value: value, label: value };
+              })}
             />
 
-            <Search
-              onChange={handleChange}
-              placeholder='Поиск фильма...'
-              style={{ maxWidth: 400 }}
-            />
+            <Button
+              type='primary'
+              htmlType='submit'
+              loading={isFetching}
+            >
+              Применить
+            </Button>
           </Flex>
-          <Button
-            type='primary'
-            htmlType='submit'
-            loading={isFetching}
-            style={{ marginTop: 20 }}
-          >
-            Применить
-          </Button>
         </Card>
       </form>
       {data ? (
-        data?.docs?.map((item: Film) => <div key={item.id}>{item.name}</div>)
+        <Flex
+          style={{ margin: '40px 0' }}
+          wrap='wrap'
+          gap='middle'
+          align='start'
+        >
+          {data?.docs?.map((item: Film) => (
+            <FilmCard
+              name={item.name}
+              previewUrl={item.poster.previewUrl}
+              id={item.id}
+              year={item.year}
+              rating={item.rating.kp}
+              key={item.id}
+            />
+          ))}
+        </Flex>
       ) : (
         <div>Загрузка...</div>
       )}

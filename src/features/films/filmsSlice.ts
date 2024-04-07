@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { BASE_URL } from '../../utils/constants';
-import { Film, ListResponse } from '../types';
+import { BASE_URL, TOKEN } from '../../utils/constants';
+import { ListResponse } from '../types';
 
 export const getFilms = createAsyncThunk(
   'films/getFilms',
@@ -9,7 +9,7 @@ export const getFilms = createAsyncThunk(
     try {
       const res = await axios(`${BASE_URL}/movie`, {
         headers: {
-          'X-API-KEY': 'WF76VQQ-HQB4P5G-JFJH8DF-CRKDP1M',
+          'X-API-KEY': TOKEN,
         },
       });
       return res.data;

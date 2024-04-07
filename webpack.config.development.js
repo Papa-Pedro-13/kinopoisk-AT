@@ -4,6 +4,8 @@ const CopyPlugin = require('copy-webpack-plugin');
 const { outputConfig, copyPluginPatterns, entryConfig, devServer } = require("./env.config");
 
 module.exports = (env, options) => {
+    console.log(process.argv[2].substring(2))
+
     return {
         mode: options.mode,
         entry: entryConfig,
